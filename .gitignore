@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Environment variables & secrets
+.env
+.env.local
+*.pem
+secrets.json
+
+# Databricks
+.databricks/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Data files (never commit raw data)
+*.json
+*.csv
+*.parquet
+*.zip
+data/
+Takeout/
+
+# But DO include config/sample JSONs
+!package.json
+!tsconfig.json
+!*.config.json
