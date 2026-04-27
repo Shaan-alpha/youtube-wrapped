@@ -2,7 +2,7 @@
 
 A modern Next.js web application that visualizes your YouTube watch history analytics. Built with TypeScript, Tailwind CSS, and server-side rendering for optimal performance.
 
-**Live Demo:** https://youtube-wrapped.vercel.app
+**Live Demo:** https://youtube-wrapped-by-shaan.vercel.app/
 
 ## Features
 
