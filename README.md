@@ -2,7 +2,7 @@
 
 A Spotify Wrapped-style dashboard for your YouTube watch history. Analyze your viewing patterns, discover your top channels, genres, and artists, and visualize your watching habits over time.
 
-**Demo:** https://youtube-wrapped.vercel.app
+**Demo:** https://youtube-wrapped-by-shaan.vercel.app/
 
 ## Features
 
