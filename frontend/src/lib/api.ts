@@ -1,8 +1,9 @@
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
 
-async function fetchJson<T>(path: string): Promise<T> {
+async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     next: { revalidate: 3600 }, // cache for 1 hour — data is static
+    ...init,
   });
   if (!res.ok) {
     throw new Error(`API ${path} failed: ${res.status}`);
@@ -60,6 +61,8 @@ export type LoyalArtist = {
   days_active_pct: number;
 };
 
+export type PipelineRun = { last_run_at: string | null };
+
 export const api = {
   overview: () => fetchJson<Overview>("/api/overview"),
   topArtists: (limit = 10) => fetchJson<TopArtist[]>(`/api/top-artists?limit=${limit}`),
@@ -73,4 +76,13 @@ export const api = {
   bingeSessions: (limit = 5) => fetchJson<BingeSession[]>(`/api/binge-sessions?limit=${limit}`),
   nightOwlScore: () => fetchJson<NightOwlScore>("/api/night-owl-score"),
   loyalArtists: (limit = 5) => fetchJson<LoyalArtist[]>(`/api/loyal-artists?limit=${limit}`),
+  lastPipelineRun: async (): Promise<PipelineRun> => {
+    try {
+      return await fetchJson<PipelineRun>("/api/last-pipeline-run", {
+        next: { revalidate: 60 }, // refresh quickly so the footer reflects new pipeline runs
+      });
+    } catch {
+      return { last_run_at: null };
+    }
+  },
 };

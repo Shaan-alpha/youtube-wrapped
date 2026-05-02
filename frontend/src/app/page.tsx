@@ -20,6 +20,7 @@ export default async function Home() {
     binges,
     loyal,
     topGenres,
+    pipelineRun,
   ] = await Promise.all([
     api.overview(),
     api.mainCharacter(),
@@ -30,7 +31,16 @@ export default async function Home() {
     api.bingeSessions(3),
     api.loyalArtists(5),
     api.topGenres(10),
+    api.lastPipelineRun(),
   ]);
+
+  const lastUpdated = pipelineRun.last_run_at
+    ? new Date(pipelineRun.last_run_at).toLocaleString("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "UTC",
+      }) + " UTC"
+    : "unknown";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050505] text-white">
@@ -101,14 +111,19 @@ export default async function Home() {
           </Reveal>
         </div>
 
-        <footer className="mt-20 sm:mt-28 text-center text-sm text-slate-500">
-          Built by Shaan ·{" "}
-          <a
-            href="https://github.com/Shaan-alpha/youtube-wrapped"
-            className="text-purple-300 transition-colors hover:text-purple-200"
-          >
-            View on GitHub
-          </a>
+        <footer className="mt-20 sm:mt-28 text-center text-sm text-slate-500 space-y-2">
+          <div>
+            Built by Shaan ·{" "}
+            <a
+              href="https://github.com/Shaan-alpha/youtube-wrapped"
+              className="text-purple-300 transition-colors hover:text-purple-200"
+            >
+              View on GitHub
+            </a>
+          </div>
+          <div className="text-xs text-slate-600">
+            Last pipeline run: {lastUpdated}
+          </div>
         </footer>
       </div>
     </main>

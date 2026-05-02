@@ -45,5 +45,6 @@ def root():
             "/api/binge-sessions",
             "/api/night-owl-score",
             "/api/loyal-artists",
+            "/api/last-pipeline-run",
         ],
     }

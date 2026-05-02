@@ -94,3 +94,7 @@ class LoyalArtist(BaseModel):
     first_listened: datetime
     last_listened: datetime
     days_active_pct: float
+
+
+class PipelineRun(BaseModel):
+    last_run_at: Optional[datetime] = None

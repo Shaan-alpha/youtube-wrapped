@@ -50,6 +50,18 @@ for csv_file in csv_files:
 
 print("\nAll gold tables loaded into Neon")
 
+# Stamp the pipeline run time so the frontend can show "last updated"
+with engine.begin() as conn:
+    conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS meta_pipeline_runs (
+            id INTEGER PRIMARY KEY,
+            last_run_at TIMESTAMPTZ NOT NULL
+        )
+    """))
+    conn.execute(text("DELETE FROM meta_pipeline_runs"))
+    conn.execute(text("INSERT INTO meta_pipeline_runs (id, last_run_at) VALUES (1, now())"))
+print("Recorded pipeline run timestamp in meta_pipeline_runs")
+
 # Verify
 with engine.connect() as conn:
     tables = conn.execute(text(

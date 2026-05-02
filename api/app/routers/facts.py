@@ -148,3 +148,15 @@ def get_loyal_artists(
         ORDER BY loyalty_span_days DESC
         LIMIT {limit}
     """)
+
+
+@router.get("/last-pipeline-run", response_model=models.PipelineRun)
+def get_last_pipeline_run(db: Session = Depends(get_db)):
+    row = fetch_one(db, """
+        SELECT last_run_at FROM meta_pipeline_runs
+        ORDER BY last_run_at DESC LIMIT 1
+    """) if fetch_one(db, """
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'meta_pipeline_runs'
+    """) else None
+    return row or {"last_run_at": None}
