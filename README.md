@@ -1,127 +1,193 @@
 # YouTube Wrapped
 
-A Spotify Wrapped-style dashboard for your YouTube watch history. Analyze your viewing patterns, discover your top channels, genres, and artists, and visualize your watching habits over time.
+A personal "Spotify Wrapped" for YouTube watch history. The project turns a Google Takeout export into a polished year-in-review dashboard with Databricks, Neon Postgres, FastAPI, and Next.js.
 
-**Demo:** https://youtube-wrapped-by-shaan.vercel.app
+[Live demo](https://youtube-wrapped-by-shaan.vercel.app) | [API docs](https://youtube-wrapped-api.onrender.com/docs)
 
-## Features
+![YouTube Wrapped overview](docs/screenshots/hero-overview.png)
 
-- 📊 **Comprehensive Analytics** — View your top channels, genres, artists, and viewing patterns
-- 🎬 **Detailed Breakdowns** — See listening rhythms, binge sessions, and your night owl score
-- 📈 **Timeline Visualization** — Track your viewing history over time
-- 🎯 **Personalized Insights** — Discover your main character artist and loyalty patterns
-- 🔄 **Real-time Data** — Easy upload and processing of your YouTube watch history
+## Why I Built This
+
+YouTube watch history is full of patterns, but the raw Takeout export is not built for exploration. This project cleans and enriches that data, then presents it as a shareable analytics experience: top artists, music share, genre split, binge sessions, listening rhythm, and loyalty insights.
+
+## Preview
+
+| Personal insights | Listening rhythm |
+| --- | --- |
+| ![Top artists and genre split](docs/screenshots/artists-genre-split.png) | ![Hourly listening rhythm](docs/screenshots/listening-rhythm.png) |
+
+| Genres and loyalty | Databricks pipeline |
+| --- | --- |
+| ![Top genres and loyal artists](docs/screenshots/genres-loyalty.png) | ![Databricks silver notebook](docs/screenshots/databricks-pipeline.png) |
+
+## Highlights
+
+- End-to-end data product from Google Takeout JSON to deployed web dashboard.
+- Medallion lakehouse pipeline with Bronze, Silver, Enrichment, and Gold notebooks in Databricks.
+- Typed FastAPI service backed by Neon Postgres fact tables.
+- Next.js dashboard with animated cards, responsive layouts, and cached API calls.
+- Music enrichment through YouTube metadata and MusicBrainz-style artist/genre normalization.
+- Deployment split across Vercel for the frontend, Render for the API, and Neon for the serving database.
 
 ## Architecture
 
-**Data Pipeline:**
-```
-Google Takeout (JSON) 
-  ↓
-Databricks (Bronze → Silver → Gold)
-  ↓
-Enrichment (YouTube Data API, MusicBrainz API)
-  ↓
-Neon Postgres (Serving Layer)
-  ↓
-FastAPI Backend
-  ↓
-Next.js Frontend
+```text
+Google Takeout watch-history JSON
+        |
+        v
+Databricks Bronze layer
+        |
+        v
+Databricks Silver layer
+cleaning, typing, deduplication
+        |
+        v
+Enrichment layer
+YouTube metadata + artist/genre mapping
+        |
+        v
+Databricks Gold layer
+analytics fact tables
+        |
+        v
+Neon Postgres
+        |
+        v
+FastAPI on Render
+        |
+        v
+Next.js dashboard on Vercel
 ```
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| **Data Ingestion** | Google Takeout (JSON export) |
-| **Data Warehouse** | Databricks Free Edition, Unity Catalog, Delta Lake |
-| **Data Transformation** | PySpark (Medallion architecture: Bronze → Silver → Gold) |
-| **Data Enrichment** | YouTube Data API v3, MusicBrainz API |
-| **Orchestration** | Databricks Workflows |
-| **Database** | Neon Postgres (serverless, free tier) |
-| **Backend API** | FastAPI on Render |
-| **Frontend** | Next.js on Vercel |
-| **Styling** | Tailwind CSS |
+| Layer | Tools |
+| --- | --- |
+| Data source | Google Takeout YouTube watch history |
+| Lakehouse | Databricks Free Edition, Unity Catalog, Delta Lake |
+| Transformation | PySpark, Databricks notebooks, medallion architecture |
+| Enrichment | YouTube Data API, music metadata classification |
+| Serving database | Neon Postgres |
+| API | FastAPI, SQLAlchemy, Uvicorn |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4, Recharts, Framer Motion |
+| Deployment | Vercel, Render, Neon |
 
 ## Project Structure
 
-```
+```text
 youtube-wrapped/
-├── api/                 # FastAPI backend service
-│   ├── app/
-│   │   ├── main.py     # API endpoints
-│   │   ├── database.py # Database connections
-│   │   ├── models.py   # Data models
-│   │   └── routers/    # API route handlers
-│   └── requirements.txt
-├── frontend/            # Next.js web application
-│   ├── src/
-│   │   ├── app/        # Next.js app directory
-│   │   ├── components/ # React components
-│   │   └── lib/        # Utilities and API client
-│   └── package.json
-├── notebooks/           # Databricks notebooks
-│   ├── bronze/          # Data ingestion
-│   ├── silver/          # Data cleaning and standardization
-│   ├── gold/            # Analytics and aggregations
-│   └── enrichment/      # API enrichment
-├── data/                # Sample data exports
-│   └── gold_exports/
-├── scripts/             # Utility scripts
-└── docs/                # Architecture documentation
+|-- api/                 # FastAPI service
+|   |-- app/
+|   |   |-- main.py      # App setup, CORS, router registration
+|   |   |-- database.py  # Neon/Postgres connection
+|   |   |-- models.py    # Pydantic response models
+|   |   `-- routers/     # Analytics endpoints
+|   `-- requirements.txt
+|-- frontend/            # Next.js app
+|   |-- src/app/         # App Router pages and global styles
+|   |-- src/components/  # Dashboard cards and interactions
+|   `-- src/lib/api.ts   # Typed API client
+|-- notebooks/           # Databricks pipeline notebooks
+|   |-- bronze/          # Raw ingestion
+|   |-- silver/          # Clean, typed, deduplicated data
+|   |-- enrichment/      # Metadata and music enrichment
+|   `-- gold/            # Analytics fact tables
+|-- scripts/
+|   `-- load_to_neon.py  # Loads gold CSV exports into Neon
+|-- docs/screenshots/    # README showcase images
+`-- render.yaml          # Render API deployment config
 ```
 
-## Getting Started
+## Analytics Included
 
-### Prerequisites
+- Overview totals: total watches, music share, unique artists, days tracked.
+- Main character artist: the artist that defined the listening year.
+- Top artists, channels, and genres.
+- Genre split across Desi, Western, and untagged music.
+- Listening rhythm by hour and day.
+- Binge sessions with video count and duration.
+- Loyal artists ranked by listening span.
+- Last pipeline run timestamp surfaced in the dashboard footer.
 
-- Python 3.9+
-- Node.js 18+
-- Google Takeout data export (your YouTube watch history)
-- Databricks account (free tier)
-- Neon account (free tier)
+## Run Locally
 
-### Local Development
+### Backend
 
-**Backend Setup:**
 ```bash
 cd api
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-python -m app.main
+uvicorn app.main:app --reload
 ```
 
-**Frontend Setup:**
+Create an API environment file before running against Neon:
+
+```bash
+NEON_CONNECTION_STRING=postgresql://user:password@host:port/database
+```
+
+The API runs at `http://localhost:8000`, with Swagger docs at `http://localhost:8000/docs`.
+
+### Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+Create `frontend/.env.local` if your API is not running at the default local URL:
 
-## Data Pipeline
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-1. **Export Data** — Download your YouTube watch history from Google Takeout
-2. **Ingest** — Upload to Databricks using the Bronze notebook
-3. **Clean** — Transform raw data using the Silver notebook
-4. **Enrich** — Add metadata using YouTube Data API and MusicBrainz
-5. **Aggregate** — Create analytics views using the Gold notebook
-6. **Serve** — Query results via FastAPI and display in Next.js dashboard
+The dashboard runs at `http://localhost:3000`.
+
+## Data Workflow
+
+1. Export YouTube watch history from Google Takeout.
+2. Run `notebooks/bronze/02_bronze_ingest.ipynb` to land the raw history in Databricks.
+3. Run `notebooks/silver/03_silver_clean.ipynb` to parse timestamps, clean titles, type columns, and deduplicate rows.
+4. Run `notebooks/enrichment/04_enrich_youtube.ipynb` to add video, channel, artist, and genre context.
+5. Run `notebooks/gold/05_gold_facts.ipynb` to produce dashboard-ready fact tables.
+6. Export `fact_*.csv` files into `data/gold_exports/`.
+7. Load the serving tables into Neon:
+
+```bash
+python scripts/load_to_neon.py
+```
+
+Raw exports, CSVs, and secrets are intentionally ignored by Git so personal watch history is not committed.
+
+## API Surface
+
+The FastAPI app exposes read-only analytics endpoints under `/api`, including:
+
+```text
+/api/overview
+/api/top-artists
+/api/top-channels
+/api/top-genres
+/api/genre-split
+/api/listening-by-hour
+/api/listening-by-dayofweek
+/api/timeline
+/api/main-character
+/api/binge-sessions
+/api/night-owl-score
+/api/loyal-artists
+/api/last-pipeline-run
+```
 
 ## Deployment
 
-- **Backend:** Deployed on Render with automated deployments
-- **Frontend:** Deployed on Vercel with continuous deployment from GitHub
-- **Database:** Neon Postgres serverless
+- Frontend: deployed on Vercel.
+- Backend: deployed on Render using `render.yaml`.
+- Database: hosted on Neon Postgres.
+- Pipeline: run in Databricks, then loaded into Neon with `scripts/load_to_neon.py`.
 
 ## License
 
-MIT
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-**Status:** ✅ Complete
+MIT License. See [LICENSE](LICENSE).
