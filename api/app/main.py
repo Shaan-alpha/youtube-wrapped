@@ -1,6 +1,8 @@
 """
 YouTube Wrapped API — FastAPI entry point.
 """
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,11 +14,13 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# CORS — allow frontend to call this API
-# In production, replace "*" with your Vercel URL
+# CORS — comma-separated origins via CORS_ORIGINS, or "*" to allow all (default for dev).
+_raw = os.getenv("CORS_ORIGINS", "*").strip()
+allow_origins = ["*"] if _raw == "*" else [o.strip() for o in _raw.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=False,
     allow_methods=["GET", "OPTIONS"],
     allow_headers=["*"],

@@ -63,6 +63,41 @@ export type LoyalArtist = {
 
 export type PipelineRun = { last_run_at: string | null };
 
+// Safe defaults so a single failing endpoint can't crash the page render.
+// Cards already handle empty arrays; scalar shapes need real zeros.
+export const EMPTY_DATA = {
+  overview: {
+    total_watches: 0,
+    unique_videos: 0,
+    unique_channels: 0,
+    music_watches: 0,
+    unique_artists: 0,
+    first_watch: "",
+    latest_watch: "",
+    days_of_history: 0,
+    music_pct: 0,
+  } satisfies Overview,
+  mainCharacter: {
+    artist_name: "—",
+    total_plays: 0,
+    peak_month: "",
+    peak_month_plays: 0,
+    peak_month_pct_of_artist: 0,
+  } satisfies MainCharacter,
+  nightOwl: {
+    night_owl_pct: 0,
+    morning_pct: 0,
+    afternoon_pct: 0,
+    evening_pct: 0,
+  } satisfies NightOwlScore,
+  topArtists: [] as TopArtist[],
+  topGenres: [] as TopGenre[],
+  genreSplit: [] as GenreSplit[],
+  byHour: Array.from({ length: 24 }, (_, h) => ({ watch_hour: h, watches: 0 })) as HourlyListening[],
+  binges: [] as BingeSession[],
+  loyal: [] as LoyalArtist[],
+};
+
 export const api = {
   overview: () => fetchJson<Overview>("/api/overview"),
   topArtists: (limit = 10) => fetchJson<TopArtist[]>(`/api/top-artists?limit=${limit}`),

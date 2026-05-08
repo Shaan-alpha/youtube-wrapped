@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api, EMPTY_DATA } from "@/lib/api";
 import { Reveal } from "@/components/Reveal";
 import { OverviewCard } from "@/components/cards/OverviewCard";
 import { MainCharacterCard } from "@/components/cards/MainCharacterCard";
@@ -9,7 +9,11 @@ import { BingeCard } from "@/components/cards/BingeCard";
 import { LoyalArtistsCard } from "@/components/cards/LoyalArtistsCard";
 import { TopGenresCard } from "@/components/cards/TopGenresCard";
 
+// Match the longest fetch revalidation in api.ts so ISR refreshes the whole page on the same cadence.
+export const revalidate = 3600;
+
 export default async function Home() {
+  // allSettled + defaults: a single bad endpoint never breaks the build or the page.
   const [
     overview,
     mainCharacter,
@@ -22,15 +26,15 @@ export default async function Home() {
     topGenres,
     pipelineRun,
   ] = await Promise.all([
-    api.overview(),
-    api.mainCharacter(),
-    api.topArtists(10),
-    api.genreSplit(),
-    api.byHour(),
-    api.nightOwlScore(),
-    api.bingeSessions(3),
-    api.loyalArtists(5),
-    api.topGenres(10),
+    api.overview().catch(() => EMPTY_DATA.overview),
+    api.mainCharacter().catch(() => EMPTY_DATA.mainCharacter),
+    api.topArtists(10).catch(() => EMPTY_DATA.topArtists),
+    api.genreSplit().catch(() => EMPTY_DATA.genreSplit),
+    api.byHour().catch(() => EMPTY_DATA.byHour),
+    api.nightOwlScore().catch(() => EMPTY_DATA.nightOwl),
+    api.bingeSessions(3).catch(() => EMPTY_DATA.binges),
+    api.loyalArtists(5).catch(() => EMPTY_DATA.loyal),
+    api.topGenres(10).catch(() => EMPTY_DATA.topGenres),
     api.lastPipelineRun(),
   ]);
 

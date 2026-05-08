@@ -14,8 +14,13 @@ NEON_URL = os.getenv("NEON_CONNECTION_STRING")
 if not NEON_URL:
     raise SystemExit("Missing NEON_CONNECTION_STRING in .env")
 
-# SQLAlchemy needs the postgresql+psycopg2 prefix
-sqlalchemy_url = NEON_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+# Neon hands out either postgres:// or postgresql://; SQLAlchemy needs the +psycopg2 driver.
+if NEON_URL.startswith("postgres://"):
+    sqlalchemy_url = NEON_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif NEON_URL.startswith("postgresql://"):
+    sqlalchemy_url = NEON_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+else:
+    sqlalchemy_url = NEON_URL
 engine = create_engine(sqlalchemy_url)
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "gold_exports"

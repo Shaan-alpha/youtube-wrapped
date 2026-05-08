@@ -38,7 +38,8 @@ desktop.ini
 data/
 Takeout/
 
-# But DO include config/sample JSONs
+# But DO include config/sample JSONs and lockfiles
 !package.json
+!package-lock.json
 !tsconfig.json
 !*.config.json
