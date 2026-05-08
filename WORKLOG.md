@@ -44,4 +44,25 @@
 
 ---
 
+## 2026-05-08 — Roadmap + free-tier rule + cross-tool handoff hardened
+
+### Done
+- Added `ROADMAP.md` — checkbox-based step-by-step plan from milestone 0 through milestone 8 (polish).
+- Reworked the orchestration milestone: replaced "Astro Cloud / paid Airflow" with **GitHub Actions scheduled workflows** as the v1 orchestrator since it's genuinely free at this scale.
+- Updated `CLAUDE.md` to read `ROADMAP.md` alongside `CONTEXT.md` + `WORKLOG.md`, and codified the two hard constraints (free tier only; no AI attribution).
+- Saved a permanent project-level rule: free tier only, no paid services.
+
+### Next
+1. Milestone 1.1 — scaffold `.github/workflows/refresh-data.yml` with manual `workflow_dispatch` trigger.
+2. Milestone 1.2 — list the GitHub Actions repo secrets needed and have user add them.
+3. Then 1.3 → 1.6 to get the daily refresh DAG running on cron.
+
+### Open questions / blockers
+- All from previous entry still open (Render vs. Vercel route handlers, multi-tenant pivot). Both have free-tier paths; not blocking.
+
+### Commits / PRs
+- (uncommitted as of this entry — will be in a "docs: add ROADMAP.md ..." commit)
+
+---
+
 <!-- New entries go above this line. Keep entries concise; link out instead of repeating diffs. -->
