@@ -1,0 +1,65 @@
+name: 🐛 Bug Report
+description: Create a bug report to help us improve YouTube Wrapped
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue with YouTube Wrapped! Please provide as much context as possible so we can reproduce and resolve it quickly.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of the YouTube Wrapped pipeline or app is experiencing the bug?
+      options:
+        - Databricks Pipeline (Bronze/Silver/Gold)
+        - FastAPI Backend / Neon DB
+        - Next.js Frontend Dashboard
+        - Data Ingestion / Takeout JSON Parsing
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: E.g., When uploading my Google Takeout JSON export, the silver cleaning notebook fails on timestamp parsing...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Include relevant environment details (Python version, Databricks runtime, browser, etc.).
+      value: |
+        - **OS**: 
+        - **Python Version**: 3.11
+        - **Node Version**: 20.x
+        - **Browser**: 
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Log Output or Screenshots
+      description: Please copy and paste any relevant logs, stack traces, or screenshots here.
+      render: shell

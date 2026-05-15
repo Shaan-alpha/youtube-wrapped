@@ -4,6 +4,14 @@ A personal "Spotify Wrapped" for YouTube watch history. The project turns a Goog
 
 [Live demo](https://youtube-wrapped-by-shaan.vercel.app) | [API docs](https://youtube-wrapped-api.onrender.com/docs)
 
+[![GitHub Release](https://img.shields.io/github/v/release/Shaan-alpha/Youtube-Wrapped?style=for-the-badge&color=ff0000)](https://github.com/Shaan-alpha/Youtube-Wrapped/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/Shaan-alpha/Youtube-Wrapped?style=for-the-badge&color=ffd700)](https://github.com/Shaan-alpha/Youtube-Wrapped/stargazers)
+[![GitHub Sponsor](https://img.shields.io/badge/Sponsor-Pink?style=for-the-badge&logo=githubsponsors&logoColor=white&color=ea4aaa)](https://github.com/sponsors/Shaan-alpha)
+[![Discussions](https://img.shields.io/badge/Discussions-Active-brightgreen?style=for-the-badge&logo=github)](https://github.com/Shaan-alpha/Youtube-Wrapped/discussions)
+
+> [!NOTE]
+> 💬 **Join the Community!** Have questions, want to showcase your own YouTube Wrapped build, or need help configuring Databricks? Join our [GitHub Discussions](https://github.com/Shaan-alpha/Youtube-Wrapped/discussions)!
+
 ![YouTube Wrapped overview](docs/screenshots/hero-overview.png)
 
 ## Why I Built This
@@ -31,32 +39,43 @@ YouTube watch history is full of patterns, but the raw Takeout export is not bui
 
 ## Architecture
 
-```text
-Google Takeout watch-history JSON
-        |
-        v
-Databricks Bronze layer
-        |
-        v
-Databricks Silver layer
-cleaning, typing, deduplication
-        |
-        v
-Enrichment layer
-YouTube metadata + artist/genre mapping
-        |
-        v
-Databricks Gold layer
-analytics fact tables
-        |
-        v
-Neon Postgres
-        |
-        v
-FastAPI on Render
-        |
-        v
-Next.js dashboard on Vercel
+```mermaid
+flowchart TD
+    subgraph Data_Source ["📤 Data Ingestion"]
+        Takeout["Google Takeout (watch-history JSON)"]
+    end
+
+    subgraph Databricks_Medallion ["💎 Databricks Medallion Lakehouse"]
+        Bronze[("🥉 Bronze Layer\nRaw Data Landing")]
+        Silver[("🥈 Silver Layer\nCleaned, Typed, Deduplicated")]
+        Enrichment["⚡ Enrichment Engine\nYouTube Metadata & Music Mapping"]
+        Gold[("🥇 Gold Layer\nAnalytics Fact Tables")]
+    end
+
+    subgraph Serving_Layer ["🚀 Serving & API Layer"]
+        Neon[("🐘 Neon PostgreSQL\nServing Database")]
+        FastAPI["⚡ FastAPI Backend\n(Hosted on Render)"]
+    end
+
+    subgraph Presentation_Layer ["🖥️ Presentation Layer"]
+        NextJS["🌐 Next.js Dashboard\n(Hosted on Vercel)"]
+    end
+
+    Takeout -->|"Ingest JSON"| Bronze
+    Bronze -->|"Parse & Clean"| Silver
+    Silver -->|"Add Metadata"| Enrichment
+    Enrichment -->|"Aggregate Facts"| Gold
+    Gold -->|"Load via Script"| Neon
+    Neon -->|"SQL Query"| FastAPI
+    FastAPI -->|"REST /api"| NextJS
+
+    style Takeout fill:#ff0000,stroke:#333,stroke-width:2px,color:#fff
+    style Bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:#fff
+    style Silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:#000
+    style Gold fill:#ffd700,stroke:#333,stroke-width:2px,color:#000
+    style Neon fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    style FastAPI fill:#009688,stroke:#333,stroke-width:2px,color:#fff
+    style NextJS fill:#000000,stroke:#333,stroke-width:2px,color:#fff
 ```
 
 ## Tech Stack
